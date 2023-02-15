@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
+from .models import Task
 
 
 class UserRegisterForm(UserCreationForm):
@@ -19,7 +20,19 @@ class UserRegisterForm(UserCreationForm):
 
 
 class UserLoginForm(AuthenticationForm):
-    username = forms.CharField(label='Username',
-                               widget=forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'off'}))
+    username = forms.CharField(label='username',
+                               widget=forms.TextInput(attrs={'class': 'form-control', 'autocomplete': "off"}))
     password = forms.CharField(label='password',
                                widget=forms.PasswordInput(attrs={'class': 'form-control', 'autocomplete': 'off'}))
+
+
+class CreateTaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = ('title', 'description')
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+
+

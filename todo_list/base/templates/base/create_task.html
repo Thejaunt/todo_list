@@ -1,0 +1,17 @@
+{% extends "base/index.html" %}
+{% block title %}Tasks creation{% endblock %}
+{% block content %}
+<div><h1>Create a new task</h1></div>
+{% if request.user.is_authenticated %}
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" >Create</button>
+</form>
+{% else %}
+<div>
+    <p>To create tasks please <a href="/login">login</a> or <a href="/register">restgister</a></p>
+</div>
+{% endif %}
+
+{% endblock content %}
