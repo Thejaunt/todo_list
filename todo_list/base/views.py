@@ -8,7 +8,8 @@ from django.contrib import messages
 def home_page(request):
     if request.user.is_authenticated:
         tasks = Task.objects.all().filter(user=request.user, done=False)
-        context = {'tasks': tasks}
+        unfinished = tasks.count()
+        context = {'tasks': tasks, 'count': unfinished}
     else:
         context = {}
     return render(request, 'base/home.html', context)
@@ -56,7 +57,7 @@ def create_task(request):
         form = CreateTaskForm(request.POST)
         if form.is_valid():
             task = form.save(commit=False)
-            if task:
+            if task:  # is it necessary? idk
                 task.user = request.user
                 task.save()
                 messages.success(request, 'The task has been created')
@@ -98,6 +99,10 @@ def update_task(request, task_id):
 
 
 def view_task(request, task_id):
-    obj = get_object_or_404(Task, pk=task_id, user_id=request.user.pk)
-    context = {'title': obj.title, 'description': obj.description}
-    return render(request, 'base/view_task.html', context)
+    if request.user.is_authenticated:
+        obj = get_object_or_404(Task, pk=task_id, user_id=request.user.pk)
+
+        context = {'task': obj}
+        return render(request, 'base/view_task.html', context)
+    context = {}
+    return render(request, 'base/home.html', context)

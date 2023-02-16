@@ -1,7 +1,27 @@
 {% extends "base/index.html" %}
 {% block title %}View Task{% endblock %}
 {% block content %}
-{{title}}
+<div class="col">
+        <div class="card ">
+            <div class="card-header bg-transparent border-success ">
 
-{{ description }}
+               <h5>{{task.title}}</h5>
+                <p class="text-muted"> created {{task.created_at }}</p>
+            </div>
+             <div class="card-body">
+
+                <p class="card-text ">{{task.description}}</p>
+
+             </div>
+            <div class="card-footer text-muted" >
+
+        <a href="{% url 'done' task.id %}" class="btn btn-primary" >Done</a>
+        <a href="{% url 'delete' task.id %}" class="btn btn-danger align-self-center">Delete</a>
+         <a href="{% url 'update' task.id %}" class="btn btn-secondary">Update</a>
+
+        </div>
+    </div>
+
+
+
 {% endblock content %}

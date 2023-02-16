@@ -32,7 +32,8 @@ class CreateTaskForm(forms.ModelForm):
         fields = ('title', 'description')
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'description': forms.Textarea(
+                attrs={'class': 'form-control', 'rows': 10, 'id': 'floatingTextarea2', 'style': "height: 500px"})
         }
 
 

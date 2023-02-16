@@ -1,25 +1,36 @@
 {% extends "base/index.html" %}
 {% block title %}Home Page{% endblock %}
 {% block content %}
-<div><h1>To Do</h1></div>
+
 {% if request.user.is_authenticated %}
-<div class="row row-cols-1 row-cols-md-3 g-4">
+<div class="alert alert-info w-4 h-4" role="alert" >
+  <button type="button" class="btn btn-primary position-relative" disabled>
+  <h5>You have unfinished tasks</h5>
+  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+    {{ count }}
+  </span>
+  </button>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4 ">
 {% for task in tasks %}
 
     <div class="col">
         <div class="card h-100">
-            <div class="card-header bg-transparent border-success">
-                <a href="{% url 'view' task.id %}" class="btn btn-warning">View</a>
-                <a href="{% url 'update' task.id %}" class="btn btn-secondary">Update</a>
+            <div class="card-header bg-secondary border-success ">
+                <a href="{% url 'view' task.id %}" class="btn btn-warning ">View</a>
+                <a href="{% url 'update' task.id %}" class="btn btn-info">Update</a>
             </div>
-             <div class="card-body">
+             <div class="card-body text-dark bg-light border-success">
+                    <p class="text-muted">created {{task.created_at }}</p>
+                <div class="card-text border-success"><h5>{{task.title}}</h5></div>
 
-                <p class="card-text "><h5>{{task.title}}</h5></p>
+
 
              </div>
-            <div class="card-footer">
-        <a href="{% url 'done' task.id %}" class="btn btn-primary">Done</a>
-        <a href="{% url 'delete' task.id %}" class="btn btn-danger">Delete</a>
+            <div class="card-footer bg-secondary border-success" style="align-self-center">
+        <a href="{% url 'done' task.id %}" class="btn btn-primary" >Done</a>
+        <a href="{% url 'delete' task.id %}" class="btn btn-danger align-self-center">Delete</a>
 
         </div>
     </div>
@@ -30,9 +41,11 @@
 {% endfor %}
 </div>
 {% else %}
-<div>
-    <p> To view your tasks please login or register</p>
+<div class="alert alert-info" role="alert">
+  To view your tasks please login or register
+
 </div>
+
 {% endif %}
 
 {% endblock %}
