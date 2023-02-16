@@ -6,25 +6,22 @@
 {% if request.user.is_authenticated %}
 <form method="POST">
     {% csrf_token %}
-
-
- <div class="form-floating">
-    {{ form.title }}
-  <label for="floatingTextarea2">Title</label>
-</div>
     <div class="form-floating">
-    {{ form.description }}
-  <label for="floatingTextarea2">Description</label>
-</div>
-
+        {{ form.title }}
+        <label for="floatingTextarea2">Title</label>
+    </div>
+    <div class="form-floating">
+        {{ form.description }}
+        <label for="floatingTextarea2">Description</label>
+    </div>
     <a class="btn btn-secondary" href=" {% url 'home' %}">Cancel</a>
-    <button class="btn btn-success" type="submit" >Update</button>
-
+    <button class="btn btn-success" type="submit">Update</button>
 </form>
+
 {% else %}
 <div>
     <p>To create tasks please <a href="/login">login</a> or <a href="/register">restgister</a></p>
 </div>
-{% endif %}
 
+{% endif %}
 {% endblock content %}
