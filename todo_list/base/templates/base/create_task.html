@@ -1,9 +1,10 @@
 {% extends "base/index.html" %}
 {% block title %}Tasks creation{% endblock %}
 {% block content %}
-<div class="alert alert-info w-4 h-4" role="alert"><h4>Create a new task</h4></div>
+
 
 {% if request.user.is_authenticated %}
+<div class="alert alert-info w-4 h-4" role="alert"><h4>Create a new task</h4></div>
 <form method="POST">
     {% csrf_token %}
     <div class="form-floating">
@@ -17,9 +18,10 @@
     <button class="btn btn-success" type="submit">Create Task</button>
 </form>
 {% else %}
-<div>
+<div class="alert alert-info" role="alert">
     <p>To create tasks please <a href="/login">login</a> or <a href="/register">restgister</a></p>
 </div>
+
 {% endif %}
 
 {% endblock content %}

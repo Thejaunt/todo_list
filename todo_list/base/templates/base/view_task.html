@@ -15,10 +15,12 @@
         </div>
 
         <div class="card-footer text-muted">
+            {% if not task.done %}
             <a href="{% url 'done' task.id %}" class="btn btn-primary">Done</a>
+            {% endif %}
             <a href="{% url 'delete' task.id %}" class="btn btn-danger align-self-center">Delete</a>
             <a href="{% url 'update' task.id %}" class="btn btn-secondary">Update</a>
         </div>
-
     </div>
+</div>
 {% endblock content %}

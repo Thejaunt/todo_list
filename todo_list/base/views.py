@@ -1,3 +1,4 @@
+from django.http import HttpResponseNotFound
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Task
 from .forms import UserRegisterForm, UserLoginForm, CreateTaskForm
@@ -17,17 +18,19 @@ def home_page(request):
 
 def user_login(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-
-        user = authenticate(request, username=username, password=password)
-
-        if user is not None:
-            login(request, user)
-            messages.success(request, f'Welcome back {username}')
-            return redirect('home')
+        form = UserLoginForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, f'Welcome back {username}')
+                return redirect('home')
+            else:
+                messages.error(request, 'Login failed. Invalid username or password')
         else:
-            messages.error(request, 'Login failed')
+            messages.error(request, 'Login failed. Invalid username or password')
     form = UserLoginForm()
     return render(request, 'base/login.html', {'form': form})
 
@@ -44,7 +47,7 @@ def register(request):
             user = form.save()
             login(request, user)
             messages.success(request, "You've successfully registered")
-            return redirect(request, 'login')
+            return redirect('login')
         else:
             messages.error(request, 'Registration failed')
     else:
@@ -53,17 +56,17 @@ def register(request):
 
 
 def create_task(request):
-    if request.method == 'POST':
+    if request.method == 'POST' and request.user.is_authenticated:
         form = CreateTaskForm(request.POST)
         if form.is_valid():
             task = form.save(commit=False)
             if task:  # is it necessary? idk
-                task.user = request.user
+                task.user_id = request.user.pk
                 task.save()
                 messages.success(request, 'The task has been created')
                 return redirect('create')
             else:
-                messages.error(request, 'couldnt upload the task to the database')
+                messages.error(request, 'couldn\'t upload the task to the database')
                 return redirect('create')
         else:
             messages.error(request, 'Form is invalid. Cannot create the task')
@@ -73,27 +76,38 @@ def create_task(request):
 
 
 def delete_task(request, task_id):
-    obj = get_object_or_404(Task, pk=task_id, user_id=request.user.pk)
-    obj.delete()
-    return redirect('home')
+    if request.method == 'POST' and request.user.is_authenticated:
+        obj = get_object_or_404(Task, pk=task_id, user_id=request.user.pk)
+        if obj.done:
+            res = 'stat'
+        else:
+            res = 'home'
+        obj.delete()
+        return redirect(f'{res}')
+
+    return HttpResponseNotFound('Page not found')
 
 
 def is_done(request, task_id):
-    obj = get_object_or_404(Task, pk=task_id, user_id=request.user.pk)
-    obj.done = True
-    obj.save()
+    if request.method == 'POST' and request.user.is_authenticated:
+        obj = get_object_or_404(Task, pk=task_id, user_id=request.user.pk)
+        obj.done = True
+        obj.save()
     return redirect('home')
 
 
 def update_task(request, task_id):
-    obj = get_object_or_404(Task, pk=task_id, user_id=request.user.pk)
-    form = CreateTaskForm(instance=obj)
-
+    if not request.user.is_authenticated:
+        return HttpResponseNotFound('Page not fount')
     if request.method == 'POST':
+        obj = get_object_or_404(Task, pk=task_id, user_id=request.user.pk)
         form = CreateTaskForm(request.POST, instance=obj)
         if form.is_valid():
             form.save()
             return redirect('home')
+
+    obj = get_object_or_404(Task, pk=task_id, user_id=request.user.pk)
+    form = CreateTaskForm(instance=obj)
     context = {'form': form}
     return render(request, 'base/update_task.html', context)
 
@@ -101,8 +115,16 @@ def update_task(request, task_id):
 def view_task(request, task_id):
     if request.user.is_authenticated:
         obj = get_object_or_404(Task, pk=task_id, user_id=request.user.pk)
-
+        print(f'{request.user.pk}')
         context = {'task': obj}
         return render(request, 'base/view_task.html', context)
-    context = {}
-    return render(request, 'base/home.html', context)
+    return render(request, 'base/home.html')
+
+
+def statistics(request):
+    if request.user.is_authenticated:
+        tasks_done = Task.objects.filter(user_id=request.user.pk, done=True)
+        total_done = tasks_done.count()
+        return render(request, 'base/statistics.html', {'done': tasks_done, 'total_done': total_done})
+
+    return render(request, 'base/statistics.html')

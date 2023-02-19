@@ -20,10 +20,11 @@ class UserRegisterForm(UserCreationForm):
 
 
 class UserLoginForm(AuthenticationForm):
-    username = forms.CharField(label='username',
-                               widget=forms.TextInput(attrs={'class': 'form-control', 'autocomplete': "off"}))
+    username = forms.CharField(label='Username',
+                               widget=forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'off'}))
     password = forms.CharField(label='password',
-                               widget=forms.PasswordInput(attrs={'class': 'form-control', 'autocomplete': 'off'}))
+                               widget=forms.PasswordInput(attrs={'autocomplete': 'off', 'class': 'form-control'}))
+
 
 
 class CreateTaskForm(forms.ModelForm):
