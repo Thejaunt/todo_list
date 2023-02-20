@@ -1,23 +1,27 @@
 {% extends "base/index.html" %}
+{% load base_tags %}
 {% block title %}Statistics{% endblock %}
 {% block content %}
-
 
 {% if request.user.is_authenticated %}
 <div class="alert alert-info w-4 h-4" role="alert">
     <button type="button" class="btn btn-primary position-relative" disabled>
         <h5>You have finished tasks</h5>
         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-    {{ total_done }}
-  </span>
+            {{ total_done }}
+        </span>
+    </button>
+    <button type="button" class="btn btn-primary position-relative" disabled>
+        <h5>Average spent for one task</h5>
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            {{ done|avg_time }}
+        </span>
     </button>
 </div>
-
 <div class="row row-cols-1 row-cols-md-3 g-4 ">
-
      {% for task in done %}
     <div class="col">
-        <div class="card text-center border-dark">
+        <div class="card text-center border-dark h-100">
             <div class="card-header bg-secondary border-success ">
                 <div class="container">
                     <div class="row">
@@ -29,7 +33,9 @@
             </div>
 
             <div class="card-body text-dark bg-light border-success">
-                <p class="text-muted">created: {{ task.created_at|date:"d M Y, H:i:s" }}</p>
+                <p class="text-muted">created: {{ task.created_at }}</p>
+                <p class="text-muted">done: {{ task.done_at }}</p>
+                <p class="text-muted">time spend to finish: {{ task|spent_to_finish }}</p>
                 <div class="card-text border-success"><h5>{{task.title}}</h5>
                 </div>
             </div>
@@ -37,11 +43,10 @@
 
                 <div class="container">
                     <div class="row">
-                            <form class="col" method="POST" action="{%  url 'delete' task.id %}">
-                                {% csrf_token %}
-                                <input type="submit" class=" btn-danger btn" value="Delete">
-                            </form>
-
+                        <form class="col" method="POST" action="{%  url 'delete' task.id %}">
+                            {% csrf_token %}
+                            <input type="submit" class=" btn-danger btn" value="Delete">
+                        </form>
                     </div>
                 </div>
             </div>
@@ -54,5 +59,4 @@
     <p>To view statistics please <a href="/login">login</a> or <a href="/register">restgister</a></p>
 </div>
 {% endif %}
-
 {% endblock content %}
