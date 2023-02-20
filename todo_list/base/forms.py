@@ -26,7 +26,6 @@ class UserLoginForm(AuthenticationForm):
                                widget=forms.PasswordInput(attrs={'autocomplete': 'off', 'class': 'form-control'}))
 
 
-
 class CreateTaskForm(forms.ModelForm):
     class Meta:
         model = Task
@@ -36,5 +35,3 @@ class CreateTaskForm(forms.ModelForm):
             'description': forms.Textarea(
                 attrs={'class': 'form-control', 'rows': 10, 'id': 'floatingTextarea2', 'style': "height: 500px"})
         }
-
-
