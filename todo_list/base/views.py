@@ -6,6 +6,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 
 
+
 def home_page(request):
     if request.user.is_authenticated:
         tasks = Task.objects.all().filter(user=request.user, done=False)
@@ -41,15 +42,17 @@ def user_logout(request):
 
 
 def register(request):
+
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
+
         if form.is_valid():
             user = form.save()
             login(request, user)
             messages.success(request, "You've successfully registered")
             return redirect('login')
         else:
-            messages.error(request, 'Registration failed')
+            messages.error(request, form.errors)
     else:
         form = UserRegisterForm()
     return render(request, 'base/register.html', {'form': form})
@@ -99,14 +102,12 @@ def is_done(request, task_id):
 def update_task(request, task_id):
     if not request.user.is_authenticated:
         return HttpResponseNotFound('Page not fount')
+    obj = get_object_or_404(Task.objects.select_related('user'), pk=task_id, user_id=request.user.pk)
     if request.method == 'POST':
-        obj = get_object_or_404(Task, pk=task_id, user_id=request.user.pk)
         form = CreateTaskForm(request.POST, instance=obj)
         if form.is_valid():
             form.save()
             return redirect('home')
-
-    obj = get_object_or_404(Task, pk=task_id, user_id=request.user.pk)
     form = CreateTaskForm(instance=obj)
     context = {'form': form}
     return render(request, 'base/update_task.html', context)
@@ -114,8 +115,7 @@ def update_task(request, task_id):
 
 def view_task(request, task_id):
     if request.user.is_authenticated:
-        obj = get_object_or_404(Task, pk=task_id, user_id=request.user.pk)
-        print(f'{request.user.pk}')
+        obj = get_object_or_404(Task.objects.select_related('user'), pk=task_id, user_id=request.user.pk)
         context = {'task': obj}
         return render(request, 'base/view_task.html', context)
     return render(request, 'base/home.html')
@@ -123,7 +123,7 @@ def view_task(request, task_id):
 
 def statistics(request):
     if request.user.is_authenticated:
-        tasks_done = Task.objects.filter(user_id=request.user.pk, done=True)
+        tasks_done = Task.objects.select_related('user').filter(user_id=request.user.pk, done=True)
         total_done = tasks_done.count()
         return render(request, 'base/statistics.html', {'done': tasks_done, 'total_done': total_done})
 
