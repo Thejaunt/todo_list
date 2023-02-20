@@ -2,7 +2,6 @@
 {% block title %}Tasks creation{% endblock %}
 {% block content %}
 
-
 {% if request.user.is_authenticated %}
 <div class="alert alert-info w-4 h-4" role="alert"><h4>Create a new task</h4></div>
 <form method="POST">
@@ -21,7 +20,5 @@
 <div class="alert alert-info" role="alert">
     <p>To create tasks please <a href="/login">login</a> or <a href="/register">restgister</a></p>
 </div>
-
 {% endif %}
-
 {% endblock content %}

@@ -31,11 +31,10 @@
                     </div>
                 </div>
             </div>
-
             <div class="card-body text-dark bg-light border-success">
                 <p class="text-muted">created: {{ task.created_at }}</p>
                 <p class="text-muted">done: {{ task.done_at }}</p>
-                <p class="text-muted">time spend to finish: {{ task|spent_to_finish }}</p>
+                <p class="text-muted">time spent to finish: {{ task|spent_to_finish }}</p>
                 <div class="card-text border-success"><h5>{{task.title}}</h5>
                 </div>
             </div>

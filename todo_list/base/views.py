@@ -6,7 +6,6 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 
 
-
 def home_page(request):
     if request.user.is_authenticated:
         tasks = Task.objects.all().filter(user=request.user, done=False)
@@ -99,7 +98,7 @@ def is_done(request, task_id):
     return redirect('home')
 
 
-def update_task(request, task_id):
+def update_task(request, task_id: int):
     if not request.user.is_authenticated:
         return HttpResponseNotFound('Page not fount')
     obj = get_object_or_404(Task.objects.select_related('user'), pk=task_id, user_id=request.user.pk)
